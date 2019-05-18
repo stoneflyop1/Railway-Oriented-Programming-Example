@@ -1,56 +1,39 @@
 ﻿using System.Web.Http;
 using CsRopExample.Controllers;
 using CsRopExample.DataAccessLayer;
-using Owin;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Newtonsoft.Json.Serialization;
 
 namespace CsRopExample
 {
     class Startup
     {
-        // This code configures Web API. The Startup class is specified as a type
-        // parameter in the WebApp.Start method.
-        public void Configuration(IAppBuilder appBuilder)
+        public Startup(IConfiguration configuration)
         {
-            // Configure Web API for self-host. 
-            var config = new HttpConfiguration();
-
-            ConfigureRoutes(config);
-            ConfigureDependencies(config);
-            ConfigureJsonSerialization(config);
-
-            // add logging
-            config.MessageHandlers.Add(new MessageLoggingHandler());
-
-            appBuilder.UseWebApi(config);
+            Configuration = configuration;
         }
 
-        private static void ConfigureRoutes(HttpConfiguration config)
+        public IConfiguration Configuration { get; }
+
+        public void ConfigureServices(IServiceCollection services)
         {
-            config.MapHttpAttributeRoutes();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(options => 
+                options.SerializerSettings.ContractResolver = 
+                    new CamelCasePropertyNamesContractResolver());
+        
+            services.AddScoped<ICustomerDao, CustomerDao>();
         }
 
-        /// <summary>
-        /// Setup the dependency injection for controllers.
-        /// </summary>
-        private static void ConfigureDependencies(HttpConfiguration config)
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            var dependencyResolver = new DependencyResolver();
-
-            // create the service to be injected
-            var customerDao = new CustomerDao();
-
-            // setup a constructor for a CustomersController
-            dependencyResolver.RegisterType<CustomersController>(() => new CustomersController(customerDao));
-
-            // assign the resolver to the config
-            config.DependencyResolver = dependencyResolver;
+            app.UseMvc();
         }
 
-        private static void ConfigureJsonSerialization(HttpConfiguration config)
-        {
-            var jsonSettings = config.Formatters.JsonFormatter.SerializerSettings;
-            jsonSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
-        }
 
     }
 

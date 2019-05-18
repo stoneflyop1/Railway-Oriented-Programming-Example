@@ -1,4 +1,9 @@
 ﻿using System;
+using System.IO;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace CsRopExample
 {
@@ -6,16 +11,22 @@ namespace CsRopExample
     {
         static void Main(string[] args)
         {
-            // Start OWIN host 
-            const string baseAddress = "http://localhost:9000/";
-            using (var app = Microsoft.Owin.Hosting.WebApp.Start<Startup>(baseAddress))
-            {
-                Console.WriteLine("Listening at {0}",baseAddress);
-                Console.WriteLine("Press any key to stop");
+            CreateWebHostBuilder(args).Build().Run();
+        }
 
-                //wait
-                Console.ReadLine();
-            }
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) 
+        {
+            var config = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddCommandLine(args).AddEnvironmentVariables()
+            .Build();
+            return WebHost.CreateDefaultBuilder(args).UseConfiguration(config)
+                .UseStartup<Startup>()
+                .ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+                });  // NLog: setup NLog for Dependency injection
         }
     }
 }
