@@ -74,9 +74,17 @@ namespace CsRopExample
             request.EnableBuffering();
             var correlationId = string.Format("{0}{1}", DateTime.Now.Ticks, Thread.CurrentThread.ManagedThreadId);
             var requestInfo = string.Format("{0} {1}", request.Method, request.Path);
-            using(var sr = new StreamReader(request.Body))
+
+            
             {
-                var message = await sr.ReadToEndAsync();
+                //We now need to read the request stream.  First, we create a new byte[] with the same length as the request stream...
+                var buffer = new byte[Convert.ToInt32(request.ContentLength)];
+
+                //...Then we copy the entire request stream into the new buffer.
+                await request.Body.ReadAsync(buffer, 0, buffer.Length);
+
+                //We convert the byte[] into a string using UTF8 encoding...
+                var message = System.Text.Encoding.UTF8.GetString(buffer);
                 // Reset the request body stream position so the next middleware can read it
                 request.Body.Position = 0;
                 
