@@ -3,17 +3,14 @@
 
 open System
 open FsRopExample
+open Microsoft.AspNetCore
+open Microsoft.AspNetCore.Hosting
 
-[<EntryPoint>]
-let main _ = 
-    let baseAddress = "http://localhost:9001/"
-    use app = Microsoft.Owin.Hosting.WebApp.Start<Startup>(baseAddress)
-
-    Console.WriteLine("Listening at {0}",baseAddress)
-    Console.WriteLine("Press any key to stop")
-
-    //wait
-    Console.ReadLine() |> ignore
-
-    // exit with 0
-    0
+module Program =
+    let exitCode = 0
+    let CreateWebHostBuilder args = WebHost.CreateDefaultBuilder(args).UseStartup<Startup>()
+    
+    [<EntryPoint>]
+    let main args =
+        CreateWebHostBuilder(args).Build().Run()
+        exitCode
