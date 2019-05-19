@@ -45,29 +45,6 @@ namespace CsRopExample
             _next = next;
         }
 
-        private async Task<string> FormatResponse(HttpResponse response)
-        {
-            if (!response.Body.CanRead || !response.Body.CanSeek)
-            {
-                return "Resonpse cannot be read";
-            }
-            //We need to read the response stream from the beginning...
-            response.Body.Seek(0, SeekOrigin.Begin);
-
-            //...and copy it into a string
-            var sr = new StreamReader(response.Body);
-            {
-                string text = await sr.ReadToEndAsync();
-
-                //We need to reset the reader for the response so that the client can read it.
-                response.Body.Seek(0, SeekOrigin.Begin);
-
-                //Return the string for the response, including the status code (e.g. 200, 404, 401, etc.)
-                return $"{response.StatusCode}: {text}";
-            }
-            
-        }
-
         public async Task Invoke(HttpContext context)
         {
             var request = context.Request;

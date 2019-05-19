@@ -1,6 +1,5 @@
 ﻿namespace FsRopExample.Controllers
 
-open System
 open Microsoft.AspNetCore.Mvc
 
 open FsRopExample
@@ -138,7 +137,7 @@ type CustomersController (csDao:CsRopExample.DataAccessLayer.ICustomerDao, fsDao
             // avoid converting unit to null!
             OkResult() :> IActionResult 
         else
-           ContentResult(Content=content.ToString(), StatusCode=System.Nullable<_>(200)) :> IActionResult 
+           JsonResult(content) :> IActionResult 
 
     // create a two track version of Ok
     let okR result = mapR ok result
