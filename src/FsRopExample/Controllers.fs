@@ -152,7 +152,7 @@ type CustomersController (csDao:CsRopExample.DataAccessLayer.ICustomerDao, fsDao
     // =================================
 
     let log format (objs:obj[]) = 
-        System.Diagnostics.Debug.WriteLine("[LOG]" + format,objs)
+        System.Console.WriteLine("[LOG]" + format,objs)
 
     // log values on the success path
     let logSuccessR format result = 

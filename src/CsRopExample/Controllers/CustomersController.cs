@@ -104,8 +104,9 @@ namespace CsRopExample.Controllers
             catch (Exception ex)
             {
                 // handle database errors
+                var errMsg = $"Exception: {ex.Message}";
                 Log("Exception: {0}", ex.Message);
-                return this.StatusCode(500);
+                return new ContentResult{Content = errMsg, StatusCode = 500};
             }
         }
 
@@ -172,8 +173,9 @@ namespace CsRopExample.Controllers
             catch (Exception ex)
             {
                 // handle database errors
+                var errMsg = $"Exception: {ex.Message}";
                 Log("Exception: {0}", ex.Message);
-                return StatusCode(500);
+                return new ContentResult{Content = errMsg, StatusCode = 500};
             }
             finally
             {
@@ -213,7 +215,7 @@ namespace CsRopExample.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500);
+                return new ContentResult{StatusCode= 500, Content = ex.Message};//StatusCode(500);
             }
         }
 
@@ -232,7 +234,7 @@ namespace CsRopExample.Controllers
         /// </summary>
         private static void Log(string format, params object[] objs)
         {
-            Debug.WriteLine("[LOG]" + format, objs);
+            Console.WriteLine("[LOG]" + format, objs);
         }
     }
 }
